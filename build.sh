@@ -109,11 +109,19 @@ MakeRelease() {
 
 if [ "$1" = "dev" ]; then
   FetchWebDev
-  BuildDev
+  if [ "$2" = "web" ]; then
+    echo "web only"
+  else
+    BuildDev
+  fi
 elif [ "$1" = "release" ]; then
   FetchWebRelease
-  BuildRelease
-  MakeRelease "md5.txt"
+  if [ "$2" = "web" ]; then
+    echo "web only"
+  else
+    BuildRelease
+    MakeRelease "md5.txt"
+  fi
 else
   echo -e "Parameter error"
 fi
