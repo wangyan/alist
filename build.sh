@@ -8,7 +8,6 @@ if [ "$1" = "dev" ]; then
   version="dev"
   webVersion="dev"
 else
-  git tag -d beta
   version=$(git describe --abbrev=0 --tags)
   webVersion=$(wget -qO- -t1 -T2 "https://api.github.com/repos/wangyan/alist-web-dist/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
 fi
@@ -25,6 +24,18 @@ ldflags="\
 -X 'github.com/alist-org/alist/v3/internal/conf.Version=$version' \
 -X 'github.com/alist-org/alist/v3/internal/conf.WebVersion=$webVersion' \
 "
+
+BuildWinArm64() {
+  echo building for windows-arm64
+  chmod +x ./wrapper/zcc-arm64
+  chmod +x ./wrapper/zcxx-arm64
+  export GOOS=windows
+  export GOARCH=arm64
+  export CC=$(pwd)/wrapper/zcc-arm64
+  export CXX=$(pwd)/wrapper/zcxx-arm64
+  export CGO_ENABLED=1
+  go build -o "$1" -ldflags="$ldflags" -tags=jsoniter .
+}
 
 FetchWebDev() {
   curl -L https://codeload.github.com/wangyan/alist-web-dist/tar.gz/refs/heads/develop -o alist-web-dist-develop.tar.gz
@@ -57,7 +68,7 @@ BuildDev() {
   export CC=${cgo_cc}
   export CGO_ENABLED=1
   go build -o ./dist/$appName-$os_arch -ldflags="$muslflags" -tags=jsoniter .
-  xgo -targets=windows/amd64,linux/amd64,darwin/amd64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
+  xgo -targets=windows/amd64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
   mv alist-* dist
   cd dist
   find . -type f -print0 | xargs -0 md5sum >md5.txt
@@ -67,7 +78,8 @@ BuildDev() {
 BuildRelease() {
   rm -rf .git/
   mkdir -p "build"
-  xgo -targets=windows/amd64,linux/amd64,darwin/amd64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
+  BuildWinArm64 ./build/alist-windows-arm64.exe
+  xgo -targets=windows/amd64,linux/amd64,linux/arm64,darwin/amd64,darwin/arm64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
   mv alist-* build
 }
 
