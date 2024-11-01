@@ -8,7 +8,6 @@ if [ "$1" = "dev" ]; then
   version="dev"
   webVersion="dev"
 else
-  git tag -d beta
   version=$(git describe --abbrev=0 --tags)
   webVersion=$(wget -qO- -t1 -T2 "https://api.github.com/repos/wangyan/alist-web-dist/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
 fi
@@ -40,18 +39,6 @@ FetchWebRelease() {
   rm -rf public/dist
   mv -f dist public
   rm -rf dist.tar.gz
-}
-
-BuildWinArm64() {
-  echo building for windows-arm64
-  chmod +x ./wrapper/zcc-arm64
-  chmod +x ./wrapper/zcxx-arm64
-  export GOOS=windows
-  export GOARCH=arm64
-  export CC=$(pwd)/wrapper/zcc-arm64
-  export CXX=$(pwd)/wrapper/zcxx-arm64
-  export CGO_ENABLED=1
-  go build -o "$1" -ldflags="$ldflags" -tags=jsoniter .
 }
 
 BuildDev() {
@@ -89,12 +76,7 @@ BuildDev() {
 BuildRelease() {
   rm -rf .git/
   mkdir -p "build"
-  BuildWinArm64 ./build/alist-windows-arm64.exe
   xgo -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
-  # why? Because some target platforms seem to have issues with upx compression
-  upx -9 ./alist-linux-amd64
-  cp ./alist-windows-amd64.exe ./alist-windows-amd64-upx.exe
-  upx -9 ./alist-windows-amd64-upx.exe
   mv alist-* build
 }
 
