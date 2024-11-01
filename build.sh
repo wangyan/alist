@@ -47,7 +47,7 @@ BuildDev() {
   muslflags="--extldflags '-static -fpic' $ldflags"
   url="https://musl.nn.ci/x86_64-linux-musl-cross.tgz"
   curl -L -o "x86_64-linux-musl-cross.tgz" "${url}"
-  sudo tar xf "x86_64-linux-musl-cross.tgz.tgz" --strip-components 1 -C /usr/local
+  sudo tar xf "x86_64-linux-musl-cross.tgz" --strip-components 1 -C /usr/local
   echo "building for linux-musl-amd64"
   os_arch="linux-musl-amd64"
   cgo_cc="x86_64-linux-musl-gcc"
