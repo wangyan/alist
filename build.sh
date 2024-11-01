@@ -57,7 +57,7 @@ BuildDev() {
   export CC=${cgo_cc}
   export CGO_ENABLED=1
   go build -o ./dist/$appName-$os_arch -ldflags="$muslflags" -tags=jsoniter .
-  xgo -targets=windows/amd64,darwin/amd64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
+  xgo -targets=windows/amd64,linux/amd64,darwin/amd64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
   mv alist-* dist
   cd dist
   find . -type f -print0 | xargs -0 md5sum >md5.txt
@@ -67,7 +67,7 @@ BuildDev() {
 BuildRelease() {
   rm -rf .git/
   mkdir -p "build"
-  xgo -out "$appName" -targets=windows/amd64,linux/amd64,darwin/amd64 -ldflags="$ldflags" -tags=jsoniter .
+  xgo -targets=windows/amd64,linux/amd64,darwin/amd64 -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
   mv alist-* build
 }
 
