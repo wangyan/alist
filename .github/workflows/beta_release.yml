@@ -1,6 +1,7 @@
 name: beta release
 
 on:
+  workflow_dispatch:
   push:
     branches: [ 'develop' ]
 
@@ -98,4 +99,3 @@ jobs:
           files: build/compress/*
           prerelease: true
           tag_name: beta
-        
