@@ -77,9 +77,9 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Setup dev
-        run: bash build.sh dev
-
+      - name: Setup web
+        run: bash build.sh dev web
+ 
       - name: Build
         id: test-action
         uses: go-cross/cgo-actions@v1
